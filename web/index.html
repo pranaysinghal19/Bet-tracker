@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src blob: data:; font-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#152733">
+<title>Bet Tracker</title>
+<link rel="icon" href="img/logo.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand"><img src="img/logo.png" alt="" style="width:30px;height:30px;vertical-align:-8px;margin-right:6px;border-radius:7px">Bet<i>Tracker</i></div>
+  <div class="wallet"><span id="hdrBal">$0.00</span><em id="hdrWallet">＋</em></div>
+</div>
+<div class="subbar" id="hdrSub"></div>
+<div id="coolBanner"></div>
+
+<!-- ================= HOME ================= -->
+<section class="page on" id="p-home">
+  <div class="card">
+    <h2>🎯 Today's Quota</h2>
+    <div class="ev" id="need"></div>
+    <div id="needWarn"></div>
+    <div class="row"><button id="goLog">➕ Log a bet</button><button class="sec" id="goMoney">💰 Add money</button></div>
+    <button class="sec" id="goClose">🌙 End-of-day balance</button>
+  </div>
+  <div class="card">
+    <h2>💼 Balance</h2>
+    <div class="big" id="bank">$0</div>
+    <div class="bar"><i id="prog" style="width:0"></i></div>
+    <div class="sub" id="progTxt"></div>
+    <div class="sub" id="depTxt"></div>
+    <div style="margin-top:10px"><span class="pill" id="status"></span></div>
+    <div class="ev" id="planCheck" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h2>📊 Stats</h2>
+    <div class="row">
+      <div class="stat"><b id="sPL">$0</b><span>Total P/L</span></div>
+      <div class="stat"><b id="sROI">0%</b><span>ROI on stakes</span></div>
+      <div class="stat"><b id="sWR">–</b><span>Win rate</span></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div class="stat"><b id="sWL">0-0</b><span>W–L</span></div>
+      <div class="stat"><b id="sStreak">–</b><span>Streak</span></div>
+      <div class="stat"><b id="sDays">0</b><span>Bet days left</span></div>
+    </div>
+    <div id="bySport" class="note"></div>
+  </div>
+  <div class="card">
+    <h2>📈 Bankroll vs Goal</h2>
+    <canvas id="chart" width="700" height="440"></canvas>
+    <div class="legend"><span><i style="background:#f58426"></i>Your bankroll</span><span><i style="background:#8b949e"></i>Original plan</span><span><i style="background:#56d364"></i>Adjusted plan</span><span><i style="background:#388bfd"></i>Max odds every day</span></div>
+  </div>
+  <div class="card">
+    <div class="sub">Betting should be fun, not a way to make money you need. <a href="#" id="homeHelp">Get support →</a></div>
+  </div>
+</section>
+
+<!-- ================= BETS ================= -->
+<section class="page" id="p-bets">
+  <div class="card">
+    <div class="seg" id="betTabs"><button type="button" data-t="open" class="on">Open</button><button type="button" data-t="settled">Settled</button><button type="button" data-t="cal">Calendar</button></div>
+  </div>
+  <div class="card" id="calCard" style="display:none">
+    <div class="cal-head">
+      <button class="small sec" id="prevM">‹</button>
+      <b id="calTitle"></b>
+      <button class="small sec" id="nextM">›</button>
+    </div>
+    <div class="grid" id="calGrid"></div>
+    <div class="legend">
+      <span><i style="background:#238636"></i>Up day</span><span><i style="background:#da3633"></i>Down day</span><span><i style="background:#388bfd"></i>Active</span><span><i style="background:#484f58"></i>Void</span><span><i style="background:#8957e5"></i>💰 Money</span>
+    </div>
+    <div class="note">Each day shows its W–L record, closing balance and 🎯 target. Targets from today on are re-planned from your actual balance. Tap a day to add, settle or edit.</div>
+  </div>
+  <div class="card">
+    <div class="list" id="betList"></div>
+  </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="page" id="p-stats">
+  <div class="card">
+    <div class="seg scroll" id="statPeriod"><button type="button" data-v="7d">7 days</button><button type="button" data-v="30d">30 days</button><button type="button" data-v="month">This month</button><button type="button" data-v="year">This year</button><button type="button" data-v="all" class="on">All time</button></div>
+  </div>
+  <div class="card">
+    <h2>📈 Balance</h2>
+    <canvas id="stChart" width="700" height="360" style="height:180px"></canvas>
+  </div>
+  <div class="card">
+    <h2>📊 Overview</h2>
+    <div id="stTiles" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+  </div>
+  <div class="card">
+    <h2>🍩 Results</h2>
+    <canvas id="stDonut" width="300" height="300" style="width:150px;height:150px;margin:0 auto"></canvas>
+    <div class="legend" id="stLegend" style="justify-content:center"></div>
+    <div id="stStates" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h2>🔎 Breakdown</h2>
+    <div class="seg scroll" id="statDim"></div>
+    <div id="stBreak"></div>
+  </div>
+  <div class="card">
+    <h2>🧪 Optimizer</h2>
+    <div id="stOpt" class="list"></div>
+  </div>
+</section>
+
+<!-- ================= BET SLIP ================= -->
+<section class="page" id="p-log">
+  <div class="card">
+    <h2 id="logTitle">🧾 Bet Slip <span class="tag" style="margin-left:auto">SINGLE</span></h2>
+    <button class="sec" id="scanBtn">📷 Scan a betslip</button>
+    <input type="file" id="slipFile" accept="image/*" style="display:none">
+    <div id="scanStatus"></div>
+    <details id="scanRaw" style="display:none;margin-top:8px"><summary class="sub">Text read from the slip</summary><pre id="scanText" style="white-space:pre-wrap;font-size:12px;color:var(--mut)"></pre></details>
+
+    <label>Date</label>
+    <input type="date" id="fDate">
+    <div class="note" id="dayCount"></div>
+
+    <label>Sport</label>
+    <div class="seg scroll" id="fSport"></div>
+    <label>League / competition</label>
+    <select id="fLeague"></select>
+
+    <div id="optTeams">
+      <div class="row">
+        <div><label id="lblA">Away team</label><input id="fAway" list="dlTeams" autocomplete="off" maxlength="60"></div>
+        <div><label id="lblB">Home team</label><input id="fHome" list="dlTeams" autocomplete="off" maxlength="60"></div>
+      </div>
+      <button class="sec small" id="swapTeams" style="margin-top:8px">⇄ Swap</button>
+    </div>
+    <div id="optEvent"><label>Event / race</label><input id="fEvent" maxlength="80" placeholder="e.g. Melbourne Cup, Monaco GP, The Masters"></div>
+    <datalist id="dlTeams"></datalist>
+    <datalist id="dlPlayers"></datalist>
+
+    <label>Market</label>
+    <div class="seg scroll" id="fMarket"></div>
+
+    <div id="optSel"><label>Selection</label><div class="seg" id="fSel"></div></div>
+    <div id="optPlayer"><label id="lblPlayer">Player</label><input id="fPlayer" list="dlPlayers" autocomplete="off" maxlength="60"></div>
+    <div id="optDesc"><label id="lblDesc">Details</label><input id="fDesc" maxlength="160"></div>
+    <div id="optOU"><label>Over / Under</label><div class="seg" id="fOU"></div></div>
+    <div id="optLine"><label id="lblLine">Line</label><input id="fLine" type="number" step="0.5" inputmode="decimal"></div>
+    <div id="optLegs"><label>Number of legs</label><input id="fLegs" type="number" step="1" min="2" inputmode="numeric" placeholder="e.g. 3"></div>
+
+    <div class="slipsel" id="pickPrev"></div>
+
+    <div class="row">
+      <div><label>Odds <span class="sub" id="oddsCap"></span></label><input id="fOdds" type="number" step="0.01" inputmode="decimal" placeholder="1.50"></div>
+      <div><label>Stake</label><div class="prefix"><span id="curSym">$</span><input id="fStake" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div></div>
+    </div>
+    <div class="note" id="stakeHint"></div>
+    <div class="quota" id="quota"></div>
+    <button class="sec" id="useQuota">Use Quota Stake</button>
+    <div class="ev" id="evOut" style="margin-top:10px"></div>
+
+    <div id="checkWrap"><h2 style="margin-top:18px">✅ Pre-bet Checklist</h2><div id="checks"></div></div>
+
+    <div class="row">
+      <div><label>Bookmaker</label><input id="fBook" list="dlBooks" autocomplete="off" maxlength="40" placeholder="e.g. Sportsbet"></div>
+      <div><label>Tipster / source</label><input id="fTipster" list="dlTipsters" autocomplete="off" maxlength="40" placeholder="optional"></div>
+    </div>
+    <datalist id="dlBooks"></datalist><datalist id="dlTipsters"></datalist>
+    <label>Status</label>
+    <div class="seg" id="fRes"></div>
+    <div id="optCash"><label>Amount returned on cash out</label><input id="fCash" type="number" step="0.01" inputmode="decimal"></div>
+    <label>Notes</label>
+    <input id="fNote" placeholder="Why this bet?" maxlength="300">
+    <div id="gate"></div>
+    <button id="saveBet">Place Bet</button>
+    <button class="sec" id="cancelEdit" style="display:none">Cancel edit</button>
+  </div>
+</section>
+
+<!-- ================= SETTINGS ================= -->
+<section class="page" id="p-set">
+  <div class="card">
+    <h2>🏦 Bankrolls</h2>
+    <div class="sub">Run separate bankrolls or strategies, each with its own plan, rules and bets.</div>
+    <div class="list" id="bkList"></div>
+    <button class="sec" id="newBk">➕ New bankroll</button>
+  </div>
+  <div class="card">
+    <h2>⚙️ Plan (this bankroll)</h2>
+    <div class="row">
+      <div><label>Start bankroll</label><input id="gStart" type="number" step="0.01" inputmode="decimal"></div>
+      <div><label>Goal</label><input id="gGoal" type="number" step="1" inputmode="decimal"></div>
+    </div>
+    <div class="row">
+      <div><label>Start date</label><input id="gFrom" type="date"></div>
+      <div><label>Deadline</label><input id="gTo" type="date"></div>
+    </div>
+    <div class="row"><div><label>Currency symbol</label><input id="gCur" maxlength="3"></div><div><label>Unit size <span class="sub">(0 = off)</span></label><input id="gUnit" type="number" step="0.01" inputmode="decimal"></div></div>
+    <label>Odds format</label><div class="seg" id="gOdds"></div>
+    <button class="sec" id="saveGoal">Update plan</button>
+    <div class="ev" id="planOut" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h2>📏 Bet Rules (this bankroll)</h2>
+    <div class="sub" id="presetAbout"></div>
+    <label>Start from a preset</label>
+    <div class="seg" id="presetSeg"></div>
+    <button class="sec" id="applyPreset">Apply preset</button>
+
+    <div class="row">
+      <div><label>Max odds per bet <span class="sub">(0 = none)</span></label><input id="rOdds" type="number" step="0.01" inputmode="decimal"></div>
+      <div><label>Max bets per day <span class="sub">(0 = none)</span></label><input id="rPerDay" type="number" step="1" inputmode="numeric"></div>
+    </div>
+    <div class="row">
+      <div><label>Max stake % of balance <span class="sub">(0 = none)</span></label><input id="rStake" type="number" step="1" inputmode="numeric"></div>
+      <div><label>Max legs in a multi <span class="sub">(0 = none)</span></label><input id="rLegs" type="number" step="1" inputmode="numeric"></div>
+    </div>
+    <div class="setrow"><label>Require the checklist before every bet</label><label class="switch"><input type="checkbox" id="rCheck"><span></span></label></div>
+
+    <label>Allowed sports and leagues</label>
+    <div id="rSports"></div>
+
+    <label>Banned teams <span class="sub">(one per line)</span></label>
+    <textarea id="rTeams" style="min-height:70px;font:600 14px -apple-system,Roboto,sans-serif"></textarea>
+    <label>Banned players <span class="sub">(one per line)</span></label>
+    <textarea id="rPlayers" style="min-height:70px;font:600 14px -apple-system,Roboto,sans-serif"></textarea>
+    <label>Banned markets</label>
+    <div class="chips" id="rMarkets"></div>
+
+    <label>Checklist for</label>
+    <select id="rCheckSport"></select>
+    <textarea id="rChecklist" style="min-height:120px;font:600 13px -apple-system,Roboto,sans-serif" placeholder="One step per line"></textarea>
+    <div class="note">Sports without their own checklist use the "General" one.</div>
+
+    <div id="rMsg"></div>
+    <button id="saveRules">Save rules</button>
+    <details style="margin-top:10px"><summary class="sub">Share or import a rule set</summary>
+      <textarea id="rulesText" placeholder="Tap Export to copy your rules, or paste someone else's and tap Import."></textarea>
+      <div class="row"><button class="sec" id="rulesExp">Export rules</button><button class="sec" id="rulesImp">Import rules</button></div>
+    </details>
+  </div>
+
+  <div class="card" id="saferCard">
+    <h2>🛡️ Safer Betting</h2>
+    <div class="sub">Limits you set for yourself. Lowering a limit works straight away; raising or removing one only takes effect after 24 hours.</div>
+    <div class="row">
+      <div><label>Weekly deposit limit <span class="sub">(0 = off)</span></label><input id="sDep" type="number" step="1" inputmode="decimal"></div>
+      <div><label>Daily loss limit <span class="sub">(0 = off)</span></label><input id="sLoss" type="number" step="1" inputmode="decimal"></div>
+    </div>
+    <div class="note" id="saferStatus"></div>
+    <button class="sec" id="saveSafer">Save limits</button>
+    <label>Take a break</label>
+    <div class="sub">Pauses logging bets and adding money. It can't be undone until it ends.</div>
+    <div class="row"><button class="sec" data-cool="1">24 hours</button><button class="sec" data-cool="7">7 days</button><button class="sec" data-cool="30">30 days</button></div>
+    <button class="sec" id="openHelp">📞 Get support</button>
+  </div>
+
+  <div class="card">
+    <h2>💾 Your Data</h2>
+    <div class="note">Your data stays on this device. Nothing is sent anywhere. Copy a backup now and then.</div>
+    <textarea id="backup" placeholder="Tap Export, then copy this text. To restore, paste a backup here and tap Import."></textarea>
+    <div class="row"><button class="sec" id="exp">Export</button><button class="sec" id="imp">Import</button></div>
+    <button class="sec" id="reset" style="color:#ff7b72">Reset everything</button>
+  </div>
+
+  <div class="card">
+    <h2>ℹ️ About</h2>
+    <div class="sub">Bet Tracker <span id="ver"></span> · open source under the Apache-2.0 licence.<br>Source code: <a href="https://github.com/pranaysinghal19/bet-tracker">github.com/pranaysinghal19/bet-tracker</a><br>For adults (18+) where betting is legal. This app only tracks bets — it doesn't take or place them, and nothing in it is financial advice.</div>
+  </div>
+</section>
+
+<nav>
+  <a href="#" data-p="home" class="on"><svg viewBox="0 0 24 24"><path d="M12 3 2 11h3v9h5v-6h4v6h5v-9h3z"/></svg>Home</a>
+  <a href="#" data-p="bets"><svg viewBox="0 0 24 24"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2zm3 5v2h8V7zm0 4v2h8v-2zm0 4v2h5v-2z"/></svg>Bets</a>
+  <a href="#" data-p="log" class="plus"><svg viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add</a>
+  <a href="#" data-p="stats"><svg viewBox="0 0 24 24"><path d="M4 20h16v2H4zM5 10h3v8H5zm5-6h3v14h-3zm5 9h3v5h-3z"/></svg>Stats</a>
+  <a href="#" data-p="set"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5zm-1 14-4-4 1.4-1.4 2.6 2.6 5.6-5.6L18 9z"/></svg>Rules</a>
+</nav>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/slip.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

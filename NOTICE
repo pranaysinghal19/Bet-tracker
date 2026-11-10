@@ -1,0 +1,18 @@
+Bet Tracker
+Copyright 2026 Pranay Singhal and contributors
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes third-party software:
+
+- tesseract.js-core 5.1.1 (web/vendor/ocr-core.js)
+  Tesseract OCR compiled to WebAssembly. Apache License 2.0.
+  https://github.com/naptha/tesseract.js-core
+
+- Tesseract English trained data, 4.0.0_best_int (web/vendor/eng-data.js, base64-encoded)
+  via @tesseract.js-data/eng. Apache License 2.0.
+  https://github.com/tesseract-ocr/tessdata_best
+
+Build tools (downloaded by build.sh, not distributed in this repository):
+- Apktool, Apache License 2.0 — https://github.com/iBotPeaches/Apktool
+- uber-apk-signer (includes Android apksig and zipalign), Apache License 2.0 — https://github.com/patrickfav/uber-apk-signer
