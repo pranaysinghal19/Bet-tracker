@@ -368,7 +368,7 @@ an issue and discuss it first.
 
 ## 11. Status and what's next
 
-**Working now (1.0.0):**
+**Working now (1.0.1):**
 
 - Every feature in section 2, on Android and in the browser.
 - Betslip scanning, tested with head to head, line, player prop, American-odds NFL and
@@ -383,7 +383,6 @@ an issue and discuss it first.
 - CSV export for spreadsheets.
 - Optional reminders to settle open bets.
 - Translations.
-- A multi-sport version of the logo.
 
 ## 12. History and people
 

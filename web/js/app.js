@@ -3,7 +3,7 @@
    Licensed under Apache-2.0. */
 (function(){
 "use strict";
-var VERSION="1.0.0";
+var VERSION="1.0.1";
 var KEY="bettracker_v1";
 var D=window.BT_DATA, MARKETS=D.MARKETS, SPORTS=D.SPORTS, PRESETS=D.PRESETS;
 var RES={P:"Active",W:"Won",L:"Lost",C:"Cashed out",V:"Void"};
