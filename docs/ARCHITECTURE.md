@@ -13,15 +13,18 @@ second copy under `bettracker_v1_prev` as a fallback.
   setup, adult,                       first-run flags
   active,                             id of the bankroll in use
   display: { cur, odds, unit },       currency symbol, odds format (dec | us | frac), unit size
+  lock:    { salt, hash } | null,     optional PIN (salted, iterated SHA-256)
   safer:   { dep, depP, loss, lossP, coolUntil },   limits, pending raises, break end time
   profiles: [                         bankrolls
     { id, name,
-      plan:  { start, goal, from, to },
+      plan:  { start, goal, from, to, staking: quota|fixed|pct|kelly, stakeVal },
       rules: { name, preset, maxOdds, maxBetsPerDay, maxStakePct, maxLegs, requireChecklist,
                leagues: { sport: null | [leagueKeys] },
                bannedTeams, bannedPlayers, bannedMarkets, checklists: { sport: [steps] } },
       bets:   [ { id, date, sport, league, away, home, event, market, sel, ou, line, player,
-                  desc, legs, pick, odds (decimal), stake, res: P|W|L|C|V, cash, book, tipster, note } ],
+                  desc, legs, pick, odds (decimal), stake, res: P|W|H|L|C|V, cash, book, tipster, note,
+                  free, boost, ew, ewFrac, ewPlaces, comm, close, prob, tags: [..],
+                  legList: [ { s: selection, o: odds, r: P|W|L|V } ] } ],
       moves:  [ { id, date, amount (+ in / − out), note } ],
       closes: [ { id, date, balance, kind: bet|money, note } ],
       custom: { teams, players, books, tipsters } }     remembered entries
@@ -42,6 +45,14 @@ Every load and import rebuilds the whole object with `clean()` → `cleanProfile
 - anything that fails is replaced with a safe default or skipped
 
 ## Money maths
+
+- **What a bet costs (`outlay`):** free bets cost 0; each-way costs 2 × stake.
+- **What it pays (`profitOf`):**
+  - Won: `stake × (odds − 1)`, less exchange commission. Free bets don't return the stake. Each-way adds the place part at `odds × place terms`.
+  - Placed (each-way only): the win part is lost, the place part pays.
+  - Lost: minus the outlay. Cashed out: amount returned minus the outlay. Void: 0.
+- **Multis with legs (`applyLegs`):** odds are the product of the non-void legs. Any lost leg means the bet is lost; otherwise it's active until every leg is in, then won (or void if every leg is void).
+- **CLV:** `odds ÷ closing odds − 1`.
 
 - **Ledger (`ledger()`):** replays a bankroll's events in date order. On each day, money
   moves come first, then bets, then the end-of-day balance. It produces the running

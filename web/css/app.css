@@ -122,3 +122,23 @@ nav a.plus{color:var(--txt)}
 #stTiles .stat b{font-size:14px}
 .stat b .W,.slipsum .W{color:var(--win)!important}.stat b .L,.slipsum .L{color:var(--loss)!important}
 #stOpt .item{margin-top:6px}
+
+.legrow{display:flex;gap:6px;align-items:center;margin-top:6px}
+.legrow input{flex:1;min-width:0;padding:8px}
+.legrow .legodds{flex:0 0 74px}
+.legrow .legres{flex:0 0 auto;gap:3px}
+.legrow .legres button{padding:7px 8px;font-size:12px;flex:0 0 auto}
+.legrow>button{flex:0 0 auto;padding:7px 9px}
+
+.qset{display:flex;gap:6px;margin-top:6px}
+.qset button{width:auto;margin:0;padding:6px 12px;font-size:12px;box-shadow:none}
+.qset button.lost{background:#da3633;color:#fff}
+#bfCard select{padding:8px;font-size:13px}
+
+#p-stats .row select{padding:8px;font-size:12px}
+
+#lock{position:fixed;inset:0;background:var(--bg);z-index:50;align-items:center;justify-content:center}
+.lockbox{text-align:center;width:280px}
+#fFlags{display:flex;flex-wrap:wrap;gap:6px}
+#fFlags button{width:auto;margin:0;padding:8px 12px;font-size:13px;background:var(--raise);color:var(--txt);box-shadow:none;border-radius:16px}
+#fFlags button.on{background:var(--acc);color:var(--accTxt)}

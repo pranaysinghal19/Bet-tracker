@@ -140,5 +140,19 @@ var HELP=[
  {c:"Anywhere",items:[["Gambling Therapy — free multilingual support","https://www.gamblingtherapy.org",""]]}
 ];
 
-window.BT_DATA={MARKETS:M,SPORTS:SPORTS,PRESETS:PRESETS,CHECKS:CHECKS,HELP:HELP};
+
+/* ---------------- learn: short offline guides (original text) ---------------- */
+var GUIDES=[
+ {k:"bankroll",t:"Bankroll and units",b:["Your bankroll is money set aside only for betting — money you can afford to lose. Never top it up from bills or savings.","A unit is a fixed slice of it, often 1–2%. Thinking in units keeps stakes steady when you're on a hot or cold streak, and lets you compare results with anyone, whatever their bankroll size.","Set a unit size under Rules → Plan and the app shows stakes and profit in units too."]},
+ {k:"odds",t:"Odds and implied probability",b:["Decimal odds of 1.25 mean a $10 bet returns $12.50 — $2.50 profit plus your stake.","Every price hides a probability: divide 1 by the decimal odds. 1.25 → 80%. 2.00 → 50%. 4.00 → 25%.","Add up the implied probabilities of every outcome in a market and you'll get more than 100%. The extra is the bookmaker's margin. The no-vig calculator strips it out to show the fair price."]},
+ {k:"value",t:"Value and expected value (EV)",b:["A bet has value when your chance of it winning is higher than the chance implied by the odds.","Expected value is what a bet would earn on average if you placed it many times: EV = (win chance × profit) − (lose chance × stake).","Enter your win chance on the bet slip and the app shows the EV. Be honest — overrating your picks is the most common way punters lose."]},
+ {k:"kelly",t:"Kelly staking",b:["The Kelly formula sizes a stake from your edge: stake % = (odds − 1) × chance − (1 − chance), all divided by (odds − 1).","Full Kelly swings wildly and assumes your win chance is exactly right. Most bettors use a fraction — quarter Kelly (0.25) is common.","No edge means Kelly says don't bet. That's a feature, not a bug."]},
+ {k:"clv",t:"Closing line value (CLV)",b:["The closing line is the last price before the event starts — usually the most accurate price the market produces.","If you took 1.30 and the price closed at 1.22, you beat the close: CLV = 1.30 ÷ 1.22 − 1 = +6.6%.","Over hundreds of bets, consistently positive CLV is a strong sign of real skill, even through losing runs. Add closing odds under 'More' on the bet slip."]},
+ {k:"ew",t:"Each-way bets",b:["An each-way bet is two equal bets: one to win and one to place. A $10 each-way bet costs $20.","If it wins, both parts pay. If it only places, the win part loses and the place part pays at a fraction of the odds — commonly 1/4 or 1/5.","Turn on Each-way in the slip's Extras and pick the place terms. The app works out the profit for a win and for a place."]},
+ {k:"promos",t:"Free bets and odds boosts",b:["With most free bets, the stake isn't returned when you win and you lose nothing when it loses. Mark them as free bets so your real ROI isn't distorted.","Odds boosts are better prices on selected bets. Tag them so Stats can show whether promos actually add to your profit.","Promotions exist to keep you betting. Use them only on bets you'd have made anyway."]},
+ {k:"variance",t:"Streaks and variance",b:["Even a 90% shot loses one time in ten — and sometimes two or three times in a row. Short runs tell you very little.","Judge your system on hundreds of bets, not a week. Use the Optimizer and CLV, not your gut, to decide what to change.","Chasing losses with bigger stakes is how bankrolls disappear. The daily loss limit and breaks exist for exactly this."]},
+ {k:"safer",t:"Betting safely",b:["Set limits before you start, not after a loss: a weekly deposit limit and a daily loss limit.","If betting stops being fun, take a break — 24 hours, 7 days or 30 days. It can't be undone early, on purpose.","Free, confidential help is a tap away under Rules → Get support. In Australia you can also exclude yourself from every licensed bookmaker at betstop.gov.au."]}
+];
+
+window.BT_DATA={MARKETS:M,SPORTS:SPORTS,PRESETS:PRESETS,CHECKS:CHECKS,HELP:HELP,GUIDES:GUIDES};
 })();

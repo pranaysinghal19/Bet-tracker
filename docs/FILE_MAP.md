@@ -34,6 +34,7 @@ Every folder and file in the repository, in one line each.
 | `android/apktool.yml`                   | Build settings: min SDK 24, target SDK 34, version code and name                             |
 | `android/smali/…/MainActivity.smali`    | Creates the locked-down WebView, loads `file:///android_asset/index.html`, returns picked photos |
 | `android/smali/…/Chrome.smali`          | Opens the system photo picker when you tap "Scan a betslip"                                 |
+| `android/smali/…/Bridge.smali`          | The page's only native call: `share(title, text)` opens Android's share sheet (CSV, backups, summaries) |
 | `android/smali/…/Guard.smali`           | Blocks all navigation; only `https://` and `tel:` support links open, in the browser or dialer |
 | `android/res/mipmap-*/`                 | Launcher icons: legacy and adaptive foreground at every density                            |
 | `android/res/mipmap-anydpi-v26/ic_launcher.xml` | Adaptive icon definition (Android 8+)                                               |

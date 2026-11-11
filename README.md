@@ -104,6 +104,14 @@ On a phone it looks and behaves like a sportsbook app, with bottom tabs **Home �
 | ----------------------------------------------- | --------------------------------------- | ---------------------------------------------------- |
 | ![Bankrolls](docs/screenshots/phone-bankrolls.jpg) | ![Rules](docs/screenshots/phone-rules.jpg) | ![Sports](docs/screenshots/phone-rules-sports.jpg) |
 
+| Multi legs                                         | Each-way                                       | Search and filters                             |
+| -------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| ![Legs](docs/screenshots/phone-multi-legs.jpg) | ![Each-way](docs/screenshots/phone-each-way.jpg) | ![Search](docs/screenshots/phone-search.jpg) |
+
+| Profit by week or month                            | Calculators                                         | Learn                                     |
+| -------------------------------------------------- | --------------------------------------------------- | ----------------------------------------- |
+| ![Bars](docs/screenshots/phone-profit-bars.jpg) | ![Calculators](docs/screenshots/phone-calculators.jpg) | ![Learn](docs/screenshots/phone-learn.jpg) |
+
 | Safer betting                            | Support contacts                       | First run                                    |
 | ---------------------------------------- | -------------------------------------- | -------------------------------------------- |
 | ![Safer](docs/screenshots/phone-safer.jpg) | ![Help](docs/screenshots/phone-help.jpg) | ![Welcome](docs/screenshots/phone-welcome.jpg) |
@@ -117,16 +125,32 @@ You can:
 - **Scan a betslip:** pick a screenshot and the sport, teams, market, odds, stake, bookmaker and result fill in. The reader runs on the phone and nothing is uploaded.
 - **Let the app pick the stake:** enter the odds and the stake fills in to hit today's quota.
 - **Get stopped when a bet breaks your rules**, with the reason: odds too long, too many bets today, a banned team, player or market, a league you don't bet, stake too big, too many legs, checklist not done, or a limit or break you set.
-- **Record what happened:** won, lost, void or cash out (with the amount returned), plus bookmaker, tipster and notes.
+- **Record what happened:** won, lost, void or cash out (with the amount returned), plus bookmaker, tipster, tags and notes.
+- **Track promos properly:** mark **free or bonus bets** (a loss costs $0 and a win pays profit only) and **odds boosts**. Stats show your promo profit separately.
+- **Each-way bets** for racing and golf: pick the place terms and places paid, and settle as Won, Placed or Lost.
+- **Multis leg by leg:** add each leg with its odds. The combined odds work themselves out, void legs drop out, and the bet settles itself when the last leg is in.
+- **Closing odds and CLV:** add the closing price to see whether you beat the market, the stat sharp bettors trust most. **Exchange commission** comes off winnings automatically.
+- **Your edge:** enter your win chance and the slip shows expected value and a Kelly stake.
+- **Choose a staking plan:** daily quota (goal planner), fixed amount, % of balance, or fractional Kelly.
+- **Find anything:** search every bet by team, player, note or tag, and filter by sport, bookmaker, tag or result. Settle active bets with one tap from the list, and copy any bet with **↻ Bet again**.
 - **Keep your balance true:** add or withdraw money, or type your bookie balance at the end of the day and the app logs the difference.
 - **Run several bankrolls** (for example "Main" and "Weekend soccer"), each with its own plan, rules and bets.
 - **See what works:**
   - balance chart and stats by period: profit, ROI, progression, win rate, record, average odds and stake, best and worst bets
   - a results donut
   - breakdowns by sport, league, market, bookmaker, tipster, odds range, bet type and weekday
+  - average **CLV** and how often you beat the close, plus **promo profit**
+  - profit **by week or month** as bars
+  - breakdowns by tag, promo type and each-way too
   - the **optimizer**, which shows how you'd have done without your worst segments
+  - a one-tap **shareable summary**
 - **Use your format:** decimal, American or fractional odds, any currency symbol, and an optional unit size.
 - **Bet safely:** weekly deposit limit, daily loss limit, and a 24-hour, 7-day or 30-day break. Help lines open in the dialer.
+- **Calculators:** odds converter, multi/parlay, each-way, Kelly, no-vig fair odds, hedge, and arbitrage/dutching.
+- **Learn:** short offline guides to bankroll and units, odds, value, Kelly, CLV, each-way, promos, variance and betting safely.
+- **Export and import CSV:** export opens Android's share menu (Drive, email and so on). Import from a spreadsheet or another tracker; American odds and day/month dates are understood.
+- **Lock it:** an optional PIN asks for a code every time the app opens.
+- **Never forget a bet:** a reminder appears when bets from earlier days are still unsettled.
 - **Back up and share:** export all data as text, or share just a rule set.
 
 ## 3. How a betting day works
@@ -208,6 +232,10 @@ BT_KEYSTORE=my-release.p12 BT_KEYSTORE_PASS=… BT_KEY_ALIAS=bettracker ./build.
 | **Cash out**          | Settled early for the amount the bookie returned. Profit is that amount minus the stake.                   |
 | **End-of-day balance** | Your real bookie balance. The app matches it and logs the gap.                                             |
 | **Money in/out**      | Deposits and withdrawals. They change the balance but aren't betting profit.                                |
+| **Free / bonus bet**  | A bet paid for with bookie credit. Losing costs nothing; winning pays the profit only.                     |
+| **Each-way**          | Two equal bets in one: to win and to place. **Placed** means only the place part paid.                       |
+| **CLV**               | Closing line value: how your odds compare with the last price before the start. Positive = you beat the market. |
+| **Staking plan**      | How the slip fills in the stake: daily quota, fixed amount, % of balance, or Kelly.                         |
 | **Unit**              | An optional fixed stake size, so results also show in units (for example +1.6u).                            |
 | **Optimizer**         | Shows how past results would look without your losing segments. Hindsight, not a forecast.                 |
 | **Break**             | A self-imposed pause (24 hours, 7 days or 30 days) that blocks bets and deposits and can't be undone early. |
@@ -229,7 +257,7 @@ bet-tracker/
 │   └── vendor/                Tesseract OCR engine and English data (Apache-2.0), loaded only when you scan
 ├── android/                   Android wrapper (WebView), assembled with apktool (no Android SDK needed)
 │   ├── AndroidManifest.xml    App ID io.github.pranaysinghal19.bettracker, no permissions
-│   ├── smali/…/bettracker/    MainActivity (locked-down WebView), Chrome (photo picker), Guard (blocks navigation)
+│   ├── smali/…/bettracker/    MainActivity (locked-down WebView), Chrome (photo picker), Guard (blocks navigation), Bridge (share sheet only)
 │   └── res/                   Icons (adaptive) and app name
 ├── tools/Sign.java            Signs a release APK with your key (APK Signature Scheme v2 + v3)
 ├── build.sh                   Downloads pinned, checksum-verified tools, then builds, aligns and signs
@@ -296,7 +324,8 @@ an issue and discuss it first.
 - **No inline scripts, no `eval`.** Scripts load from the app's own files only.
   WebAssembly is allowed for OCR and nothing else.
 - **The WebView stays locked:** file access off, navigation blocked, no permissions in
-  the manifest.
+  the manifest. The only native call the page can make is `BTAndroid.share(title, text)`,
+  which opens the system share sheet so the user picks where it goes.
 - **Pinned, verified tools.** `build.sh` checks the SHA-256 of everything it downloads.
   Update the hash when you update a tool.
 - **Releases are signed with the project's private key**, never a public debug key.
@@ -368,9 +397,13 @@ an issue and discuss it first.
 
 ## 11. Status and what's next
 
-**Working now (1.0.1):**
+**Working now (1.1.0):**
 
 - Every feature in section 2, on Android and in the browser.
+- Version 1.1 adds features from the most popular trackers on the Play Store (Bet-Analytix,
+  Pikkit, Betstamp, XBet Track, Betty and others): free bets and boosts, each-way, multi legs,
+  CLV, commission, tags, search and filters, quick settle, staking plans, calculators, CSV,
+  PIN lock and more. Everything that needs a server was left out on purpose.
 - Betslip scanning, tested with head to head, line, player prop, American-odds NFL and
   A-League double chance slips.
 - A security pass: poisoned-backup and injection tests blocked, network access blocked,
@@ -380,8 +413,7 @@ an issue and discuss it first.
 
 - More team lists (EPL, La Liga and others change every season, so contributions are welcome).
 - Scanner tuning for more bookmaker layouts (send a blurred slip).
-- CSV export for spreadsheets.
-- Optional reminders to settle open bets.
+- Home-screen widget and phone notifications for open bets.
 - Translations.
 
 ## 12. History and people

@@ -40,6 +40,10 @@
     new-instance v1, Lio/github/pranaysinghal19/bettracker/Chrome;
     invoke-direct {v1, p0}, Lio/github/pranaysinghal19/bettracker/Chrome;-><init>(Lio/github/pranaysinghal19/bettracker/MainActivity;)V
     invoke-virtual {v0, v1}, Landroid/webkit/WebView;->setWebChromeClient(Landroid/webkit/WebChromeClient;)V
+    new-instance v1, Lio/github/pranaysinghal19/bettracker/Bridge;
+    invoke-direct {v1, p0}, Lio/github/pranaysinghal19/bettracker/Bridge;-><init>(Landroid/app/Activity;)V
+    const-string v3, "BTAndroid"
+    invoke-virtual {v0, v1, v3}, Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object;Ljava/lang/String;)V
     const-string v3, "file:///android_asset/index.html"
     invoke-virtual {v0, v3}, Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V
     invoke-virtual {p0, v0}, Landroid/app/Activity;->setContentView(Landroid/view/View;)V

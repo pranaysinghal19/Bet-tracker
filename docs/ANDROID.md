@@ -58,6 +58,8 @@ Check a download with `keytool -printcert -jarfile bet-tracker.apk`.
 - `Guard` (WebViewClient): refuses every navigation. `https://` and `tel:` links (the
   support contacts) are handed to the system browser or dialer.
 - `Chrome` (WebChromeClient): only handles the photo picker for slip scanning.
+- `Bridge` (JavaScript interface `BTAndroid`): exposes one method, `share(title, text)`,
+  which opens the system share sheet. Text over about 400 KB falls back to copy in the app.
 - Manifest: no permissions, `usesCleartextTraffic="false"`, target SDK 34. Data in
   `localStorage` survives updates, and can be included in Android's own Google backup.
 

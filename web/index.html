@@ -27,6 +27,7 @@
     <div id="needWarn"></div>
     <div class="row"><button id="goLog">➕ Log a bet</button><button class="sec" id="goMoney">💰 Add money</button></div>
     <button class="sec" id="goClose">🌙 End-of-day balance</button>
+    <div class="row"><button class="sec" id="goCalc">🧮 Calculators</button><button class="sec" id="goLearn">📚 Learn</button></div>
   </div>
   <div class="card">
     <h2>💼 Balance</h2>
@@ -66,6 +67,12 @@
   <div class="card">
     <div class="seg" id="betTabs"><button type="button" data-t="open" class="on">Open</button><button type="button" data-t="settled">Settled</button><button type="button" data-t="cal">Calendar</button></div>
   </div>
+  <div class="card" id="bfCard">
+    <input id="bfQ" placeholder="🔎 Search bets, teams, players, notes…" maxlength="60">
+    <div class="row" style="margin-top:8px"><select id="bfSport"></select><select id="bfBook"></select></div>
+    <div class="row" style="margin-top:8px"><select id="bfTag"></select><select id="bfRes"></select></div>
+    <div class="note" id="bfSum"></div>
+  </div>
   <div class="card" id="calCard" style="display:none">
     <div class="cal-head">
       <button class="small sec" id="prevM">‹</button>
@@ -89,12 +96,20 @@
     <div class="seg scroll" id="statPeriod"><button type="button" data-v="7d">7 days</button><button type="button" data-v="30d">30 days</button><button type="button" data-v="month">This month</button><button type="button" data-v="year">This year</button><button type="button" data-v="all" class="on">All time</button></div>
   </div>
   <div class="card">
+    <div class="row"><select id="sfSport"></select><select id="sfBook"></select><select id="sfTag"></select></div>
+  </div>
+  <div class="card">
     <h2>📈 Balance</h2>
     <canvas id="stChart" width="700" height="360" style="height:180px"></canvas>
   </div>
   <div class="card">
-    <h2>📊 Overview</h2>
+    <h2>📊 Overview <button class="small sec" id="stShare" style="margin-left:auto">Share</button></h2>
     <div id="stTiles" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+  </div>
+  <div class="card">
+    <h2>📅 Profit by period</h2>
+    <div class="seg" id="barMode"></div>
+    <canvas id="stBars" width="700" height="320" style="height:160px;margin-top:8px"></canvas>
   </div>
   <div class="card">
     <h2>🍩 Results</h2>
@@ -151,6 +166,11 @@
     <div id="optOU"><label>Over / Under</label><div class="seg" id="fOU"></div></div>
     <div id="optLine"><label id="lblLine">Line</label><input id="fLine" type="number" step="0.5" inputmode="decimal"></div>
     <div id="optLegs"><label>Number of legs</label><input id="fLegs" type="number" step="1" min="2" inputmode="numeric" placeholder="e.g. 3"></div>
+    <div id="optLegList">
+      <label>Legs <span class="sub">(optional — combined odds and the result work themselves out)</span></label>
+      <div id="legRows"></div>
+      <button class="sec small" id="addLeg" type="button" style="margin-top:6px">＋ Add leg</button>
+    </div>
 
     <div class="slipsel" id="pickPrev"></div>
 
@@ -170,6 +190,20 @@
       <div><label>Tipster / source</label><input id="fTipster" list="dlTipsters" autocomplete="off" maxlength="40" placeholder="optional"></div>
     </div>
     <datalist id="dlBooks"></datalist><datalist id="dlTipsters"></datalist>
+    <label>Extras</label>
+    <div class="chips" id="fFlags"></div>
+    <div id="optEW" class="row">
+      <div><label>Place terms</label><select id="fEwFrac"><option value="1">1/1 odds</option><option value="0.5">1/2 odds</option><option value="0.3333333333333333">1/3 odds</option><option value="0.25" selected>1/4 odds</option><option value="0.2">1/5 odds</option><option value="0.16666666666666666">1/6 odds</option></select></div>
+      <div><label>Places paid</label><input id="fEwPlaces" type="number" step="1" min="1" max="20" value="3" inputmode="numeric"></div>
+    </div>
+    <details id="moreOpts" style="margin-top:10px"><summary class="sub">More: tags, closing odds, your win chance, commission</summary>
+      <label>Tags <span class="sub">(comma separated)</span></label><input id="fTags" list="dlTags" maxlength="200" placeholder="e.g. live, value, banker"><datalist id="dlTags"></datalist>
+      <div class="row">
+        <div><label>Closing odds <span class="sub">(for CLV)</span></label><input id="fClose" inputmode="decimal" placeholder="add later"></div>
+        <div><label>Your win chance %</label><input id="fProb" type="number" step="0.5" min="0" max="100" inputmode="decimal" placeholder="optional"></div>
+      </div>
+      <div class="row"><div><label>Commission % <span class="sub">(exchanges)</span></label><input id="fComm" type="number" step="0.1" min="0" max="20" inputmode="decimal" placeholder="0"></div><div></div></div>
+    </details>
     <label>Status</label>
     <div class="seg" id="fRes"></div>
     <div id="optCash"><label>Amount returned on cash out</label><input id="fCash" type="number" step="0.01" inputmode="decimal"></div>
@@ -201,6 +235,10 @@
     </div>
     <div class="row"><div><label>Currency symbol</label><input id="gCur" maxlength="3"></div><div><label>Unit size <span class="sub">(0 = off)</span></label><input id="gUnit" type="number" step="0.01" inputmode="decimal"></div></div>
     <label>Odds format</label><div class="seg" id="gOdds"></div>
+    <label>Staking plan</label>
+    <select id="gStaking"><option value="quota">Daily quota (goal planner)</option><option value="fixed">Fixed amount</option><option value="pct">% of balance</option><option value="kelly">Kelly (needs your win chance)</option></select>
+    <div id="gStakeValWrap"><label id="gStakeLbl"></label><input id="gStakeVal" type="number" step="0.01" inputmode="decimal"></div>
+    <div class="note" id="gStakeNote"></div>
     <button class="sec" id="saveGoal">Update plan</button>
     <div class="ev" id="planOut" style="margin-top:10px"></div>
   </div>
@@ -261,8 +299,15 @@
   </div>
 
   <div class="card">
+    <h2>🧰 Tools</h2>
+    <div class="row"><button class="sec" id="setCalc">🧮 Calculators</button><button class="sec" id="setLearn">📚 Learn</button></div>
+  </div>
+  <div class="card">
     <h2>💾 Your Data</h2>
-    <div class="note">Your data stays on this device. Nothing is sent anywhere. Copy a backup now and then.</div>
+    <div class="note">Your data stays on this device. Nothing is sent anywhere unless you share it.</div>
+    <div class="row"><button class="sec" id="csvExp">⬆️ Export CSV</button><button class="sec" id="csvImp">⬇️ Import CSV</button></div>
+    <button class="sec" id="pinBtn">🔓 App lock</button>
+    <button class="sec" id="bkShare">📤 Share a full backup</button>
     <textarea id="backup" placeholder="Tap Export, then copy this text. To restore, paste a backup here and tap Import."></textarea>
     <div class="row"><button class="sec" id="exp">Export</button><button class="sec" id="imp">Import</button></div>
     <button class="sec" id="reset" style="color:#ff7b72">Reset everything</button>
@@ -282,6 +327,14 @@
   <a href="#" data-p="set"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5zm-1 14-4-4 1.4-1.4 2.6 2.6 5.6-5.6L18 9z"/></svg>Rules</a>
 </nav>
 
+<div id="lock" style="display:none"><div class="lockbox">
+  <img src="img/logo.png" alt="" style="width:72px;height:72px;border-radius:16px">
+  <h2 style="margin:14px 0 4px">Bet Tracker is locked</h2><div class="sub">Enter your PIN</div>
+  <input id="lockPin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" style="text-align:center;font-size:24px;letter-spacing:8px;margin-top:14px">
+  <div class="note" id="lockMsg"></div>
+  <button id="lockGo">Unlock</button>
+  <button class="sec small" id="lockReset" style="margin-top:28px">Forgot PIN? Reset the app</button>
+</div></div>
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
